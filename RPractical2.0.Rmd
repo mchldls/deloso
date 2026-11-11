@@ -1,0 +1,281 @@
+---
+title: ''
+author: "Michael Andrew Deloso"
+date: "2026-11-11"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Part A: Basic Operations
+#A1 Create v as the sequence 5,10,15...50 using seq().Print its lenght,sum and mean.
+```{r}
+v <-seq(5:50)
+length(5:50)
+sum(5:50)
+mean(5:50)
+```
+#A2 Create w that repeats the vector c(1,2,3) four times, and z that repeats each element of c(1,2,3) four times.Print both.
+```{r}
+w <- rep(c(1, 2, 3), times = 4)
+z <- rep(c(1, 2, 3), each = 4)
+
+print(w)
+print(z)
+
+```
+#A3 Compute and print: the remaider of 17 divided by 5, the integer division of 17 by 5,2 to the power of 10, the square root of 144, and pi rounded to 3 decimals.
+```{r}
+
+rem <- 17 %% 5
+int_div <- 17 %/% 5
+power_val <- 2 ^ 10
+sqrt_val <- sqrt(144)
+pi_rounded <- round(pi, digits = 3)
+
+print(rem)
+print(int_div)
+print(power_val)
+print(sqrt_val)
+print(pi_rounded)
+
+```
+#A4 Given a <- c(2,4,6,8) and b <- c(1,3,5,7), print a+b, a*b, the logical comparison a>b, and the dot product sum(a*b).
+```{r}
+
+a <- c(2, 4, 6, 8)
+b <- c(1, 3, 5, 7)
+
+
+print(a + b)
+print(a * b)
+print(a > b)
+print(sum(a * b))
+
+```
+
+#A5 Use paste() to produce "Student-1" "Student-2" "Student-3". Then identify the datatype of 42,42L,"42",41i, and TRUE. What are its output?
+```{r}
+students <- paste("Student", 1:3, sep = "-")
+print(students)
+
+
+print(class(42))
+print(class(42L))
+print(class("42"))
+print(class(41i))
+print(class(TRUE))
+
+```
+
+#Part B: Data Frames and Conditional Statements
+
+#B1 Create a data frame students with 8 rows and these columns(use stringsAsFactors+ FALSE;sex is "M" or "F")
+```{r}
+students <- data.frame(
+  student_id = 1:8,
+  name = c("Alice", "Bruno", "Chen", "Dana",
+           "Elif", "Farid", "Grace", "Hiro"),
+  sex = c("F", "M", "M", "F", "F", "M", "F", "M"),
+  section = c("A","B","A","C","B","C","A","B"),
+  midterm = c(78,85,92,67,74,88,95,59),
+  final = c(82,79,96,71,80,91,93,65),
+  attendance = c(95,88,100,72,90,85,98,60),
+  
+  stringsAsFactors = FALSE
+)
+
+students
+```
+
+#B2 Display the structure, dimension, column names, and summary of students
+```{r}
+str(students)
+dim(students)
+names(students)
+summary(students)
+```
+
+#B3 Add a column average = the mean of midterm and final for each student, rounded to 1 decimal
+```{r}
+students$average <- round((students$midterm + students$final) / 2, 1)
+students
+```
+
+#B4 Add a logical column passed that is TRUE when average >=70 and attendance >=75
+```{r}
+students$passed <- students$average >= 70 & students$attendance >= 75
+students
+```
+#B5 Using ifelse(), add a colum standing with these values based on average
+#"Honors" if average >=90
+#"Good" if average >= 75(and below 90)
+#"Needs Support" otherwise
+```{r}
+students$standing <- ifelse(students$average >= 90, "Honors",
+                     ifelse(students$average >= 75, "Good",
+                            "Needs Support"))
+
+students
+```
+#B6 Write a function classify(score) that uses an if/ else if/ else chain and return "Distinction" for 85 or above,"Merit" for 70 to 84,"Pass" for 50 to 69, and "Fail" below 50. Test it with sapply(c(90,73,55,40), classify) and print the result.
+```{r}
+classify <- function(score) {
+  if (score >= 85) {
+    return("Distinction")
+  } else if (score >= 70) {
+    return("Merit")
+  } else if (score >= 50) {
+    return("Pass")
+  } else {
+    return("Fail")
+  }
+}
+
+result <- sapply(c(90, 73, 55, 40), classify)
+print(result)
+```
+
+#Part C: rbind() and cbind()
+#C1 Create a data frame new_students with two students. Its columns must match the original, including average, passed and standing, computed the same way:
+id 9, Ines, F, section C, midterm 81, final 84, attendance 92
+id 10, Jamal, M, section A, midterm 70, final 68, attendance 80
+
+use rbind() to append them to students, saving the results as students_all.
+```{r}
+new_students <- data.frame(
+  student_id = c(9, 10),
+  name = c("Ines", "Jamal"),
+  sex = c("F", "M"),
+  section = c("C", "A"),
+  midterm = c(81, 70),
+  final = c(84, 68),
+  attendance = c(92, 80),
+  stringsAsFactors = FALSE
+)
+
+new_students$average <- round(
+  (new_students$midterm + new_students$final) / 2, 1
+)
+
+new_students$passed <- new_students$average >= 70 &
+                       new_students$attendance >= 75
+
+new_students$standing <- ifelse(
+  new_students$average >= 90, "Honors",
+  ifelse(new_students$average >= 75, "Good", "Needs Support")
+  
+)
+
+students_all <- rbind(students, new_students)
+
+print(students_all)
+View(students_all)
+```
+
+#C2 Create the numeric vector quiz <- c(8,7,10,6,7,9,10,5,8,6). Use cbind() to attach it to students_all as a column named quiz.Confirm the result is still a data frame with class().
+
+```{r}
+
+quiz <- c(8, 7, 10, 6, 7, 9, 10, 5, 8, 6)
+
+students_all <- cbind(students_all, quiz)
+print(students_all)
+class(students_all)
+```
+
+#C3 Create the matrix m <- cbind(midterm = students_all$midterm, final = students_all$final) and use rbind() to append a final row containing the column means, labelled "mean".
+
+```{r}
+m <- cbind(
+  midterm = students_all$midterm,
+  final = students_all$final
+)
+
+m <- rbind(m, mean = colMeans(m))
+print(m)
+```
+#C4 In a comment(2-3 sentences), expalin what error rbind() produces if the data frames have different column names, and show the output if you safely catch it with tryCatch()
+
+tryCatch(rbind(students, bad), error = function(e) { message("rbind failed: ", conditionMessage(e));NULL}).
+```{r}
+# rbind() produces an error when data frames have different column names.
+# It requires matching column names and their order to combine rows.
+# tryCatch() safely catches the error and displays the error message.
+
+result <- tryCatch(
+  rbind(students, bad),
+  error = function(e) {
+    message("rbind failed: ", conditionMessage(e))
+    NULL
+  }
+)
+
+print(result)
+```
+#Part D: Subsetting
+Use students_all(with quiz) for all question. Print every result.
+
+#D1 Extract the name column in three ways: $,[["name"]], and [,"name"].
+```{r}
+
+students_all$name
+
+
+students_all[["name"]]
+students_all[, "name"]
+```
+
+#D2 Extract rows 2 to 5 and only the column name, midterm, final.
+```{r}
+
+students_all[2:5, c("name", "midterm", "final")]
+```
+#D3 Using logical subsetting, select students with attendance above 90.
+```{r}
+high_attendance <- students_all[students_all$attendance > 90, ]
+print(high_attendance)
+```
+
+#D4 Using subset(), select student sex "F" in section "A" or "C" whose final is at least 75; return only name,section and final
+```{r}
+result <- subset(
+  students_all,
+  sex == "F" & section %in% c("A", "C") & final >= 75,
+  select = c(name, section, final)
+)
+
+print(result)
+```
+
+#D5 Use which.max() and which.min() to report the name of the student with the highest and lowest average.
+```{r}
+highest <- which.max(students_all$average)
+
+lowest <- which.min(students_all$average)
+
+cat("Highest average:", students_all$name[highest],
+    "-", students_all$average[highest], "\n")
+
+cat("Lowest average:", students_all$name[lowest],
+    "-", students_all$average[lowest], "\n")
+```
+
+#D6 Sort students_all by average in descending order, then print the top 3 rows.
+```{r}
+
+students_sorted <- students_all[
+  order(students_all$average, decreasing = TRUE),
+]
+
+print(head(students_sorted, 3))
+```
+
+#Part E: Basic Factors
+
+
+
